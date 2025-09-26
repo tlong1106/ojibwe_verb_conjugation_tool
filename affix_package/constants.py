@@ -2,6 +2,7 @@ from enum import Enum
 
 class Clause(str, Enum):
     INDEPENDENT_CLAUSE = "Independent"
+    DEPENDENT_CLAUSE = "Dependent"
 
 class Consonants(tuple, Enum):
     SINGLE_CONSONANT = ("b", "d", "g", "h", "'", "j", "k", "m", "n", "p", "s", "t", "w", "y", "z")
@@ -25,4 +26,5 @@ class Vowels(tuple, Enum):
 class VerbEndingVII(str, Enum):
     D = "d"
     N = "n"
+    D_N = "d_n"
     VOWEL = "vowel"
