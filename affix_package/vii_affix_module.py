@@ -302,14 +302,14 @@ def get_vii_suffix(input_data: ConjugationInput) -> str:
     verb_pronoun = input_data.verb_pronoun
 
     if verb_type != "vii":
-        return verb
+        return {"root": verb, "suffix": ""}
     
     if verb_clause == Clause.DEPENDENT_CLAUSE:
         verb, suffix = handle_dependent(verb, verb_negation, verb_pronoun)
-        return (verb, suffix)
+        return {"root": verb, "suffix": suffix}
     elif verb_clause == Clause.INDEPENDENT_CLAUSE:
         verb, suffix = handle_independent(verb, verb_negation, verb_pronoun)
-        return (verb, suffix)
+        return {"root": verb, "suffix": suffix}
     else:
         print("Neither Independent, Dependent Clause!")
-        return (verb)
+        return {"root": verb, "suffix": ""}
