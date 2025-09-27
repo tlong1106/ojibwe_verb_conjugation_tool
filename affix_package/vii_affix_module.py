@@ -133,6 +133,26 @@ VII_SUFFIX_MAP = {
                 Pronoun.THIRD_PLURAL_INANIMATE: "wan",
                 Pronoun.THIRD_PLURAL_INANIMATE_OBVIATE: "niwan"
             }
+        },
+        Negation.NEGATIVE: {
+            VerbEndingVII.D: {
+                Pronoun.THIRD_SINGULAR_INANIMATE: "sinoon",
+                Pronoun.THIRD_PLURAL_INANIMATE: "sinoon",
+                Pronoun.THIRD_SINGULAR_INANIMATE_OBVIATE: "sinini",
+                Pronoun.THIRD_PLURAL_INANIMATE_OBVIATE: "sininiwan"
+            },
+            VerbEndingVII.N: {
+                Pronoun.THIRD_SINGULAR_INANIMATE: "zinoon",
+                Pronoun.THIRD_PLURAL_INANIMATE: "zinoon",
+                Pronoun.THIRD_SINGULAR_INANIMATE_OBVIATE: "zinini",
+                Pronoun.THIRD_PLURAL_INANIMATE_OBVIATE: "zininiwan"
+            },
+            VerbEndingVII.VOWEL: {
+                Pronoun.THIRD_SINGULAR_INANIMATE: "sinoon",
+                Pronoun.THIRD_PLURAL_INANIMATE: "sinoon",
+                Pronoun.THIRD_SINGULAR_INANIMATE_OBVIATE: "sinini",
+                Pronoun.THIRD_PLURAL_INANIMATE_OBVIATE: "sininiwan"
+            }
         }
     },
     Clause.DEPENDENT_CLAUSE: {
@@ -165,9 +185,6 @@ def get_suffix(clause: str | Enum, negation: bool | Enum, verb_ending: str | Enu
     if key:
         return VII_SUFFIX_MAP.get(clause, {}).get(negation, {}).get(verb_ending, {}).get(key, {}).get(pronoun, "")
     return VII_SUFFIX_MAP.get(clause, {}).get(negation, {}).get(verb_ending, {}).get(pronoun, "")
-
-def ends_with_d(verb:str) -> bool:
-    return verb.endswith(str(VerbEndingVII.D.value))
 
 def ends_with_d_or_n(verb: str) -> bool:
     return verb.endswith((str(VerbEndingVII.D.value), str(VerbEndingVII.N.value)))
@@ -244,6 +261,36 @@ class EndDummyNIndAffirm(IndependentAffirmativeRule):
     
     def apply(self, verb, pronoun):
         return remove_final_letter(verb), get_suffix(Clause.INDEPENDENT_CLAUSE, Negation.AFFIRMATIVE, VerbEndingVII.VOWEL, pronoun)
+    
+#  - - -
+
+class IndependentNegativeRule:
+    def matches(self) -> bool:
+        raise NotImplementedError
+
+    def apply(self) -> tuple[str, str]:
+        raise NotImplementedError
+    
+class EndDIndNeg(IndependentNegativeRule):
+    def matches(self, verb, pronoun):
+        return verb.endswith(VerbEndingVII.D)
+    
+    def apply(self, verb, pronoun):
+        return remove_final_letter(verb), get_suffix(Clause.INDEPENDENT_CLAUSE, Negation.NEGATIVE, VerbEndingVII.D, pronoun)
+    
+class EndNIndNeg(IndependentNegativeRule):
+    def matches(self, verb, pronoun):
+        return verb.endswith(VerbEndingVII.N)
+    
+    def apply(self, verb, pronoun):
+        return verb, get_suffix(Clause.INDEPENDENT_CLAUSE, Negation.NEGATIVE, VerbEndingVII.N, pronoun)
+    
+class EndVowelIndNeg(IndependentNegativeRule):
+    def matches(self, verb, pronoun):
+        return ends_with_vowel(verb)
+    
+    def apply(self, verb, pronoun):
+        return verb, get_suffix(Clause.INDEPENDENT_CLAUSE, Negation.NEGATIVE, VerbEndingVII.VOWEL, pronoun)
 
 # --- 4. Rule Registry:
 
@@ -258,6 +305,12 @@ INDEPENDENT_AFFIRMATIVE_RULES = [
     EndDorNIndAffirm(),
     EndVowelIndAffirm(),
     EndDummyNIndAffirm()
+]
+
+INDEPENDENT_NEGATIVE_RULES = [
+    EndDIndNeg(),
+    EndNIndNeg(),
+    EndVowelIndNeg()
 ]
 
 # --- 5. Main Logic Functions:
@@ -275,12 +328,13 @@ def handle_dependent_affirmative(verb: str, pronoun: str) -> tuple[str, str]:
             return rule.apply(verb, pronoun)
     return verb, ""
 
+# - - -
+
 def handle_independent(verb: str, negation: bool, pronoun: str) -> tuple[str, str]:
     if negation == Negation.AFFIRMATIVE:
         return handle_independent_affirmative(verb, pronoun)
     else:
-        print("Negation not yet implemented for Independent Clause")
-        return verb, ""
+       return handle_independent_negative(verb, pronoun)
     
 def handle_independent_affirmative(verb: str, pronoun: str) -> tuple[str, str]:
     for rule in INDEPENDENT_AFFIRMATIVE_RULES:
@@ -288,7 +342,13 @@ def handle_independent_affirmative(verb: str, pronoun: str) -> tuple[str, str]:
             return rule.apply(verb, pronoun)
     return verb, ""
 
-def get_vii_suffix(input_data: ConjugationInput) -> str:
+def handle_independent_negative(verb: str, pronoun: str) -> tuple[str, str]:
+    for rule in INDEPENDENT_NEGATIVE_RULES:
+        if rule.matches(verb, pronoun):
+            return rule.apply(verb, pronoun)
+    return verb, ""
+
+def get_vii_suffix(input_data: ConjugationInput) -> dict:
     """
     Pure function that returns Verb Inanimate Intransitive (VII) conjugation:
       Clause: Independent
@@ -310,6 +370,5 @@ def get_vii_suffix(input_data: ConjugationInput) -> str:
     elif verb_clause == Clause.INDEPENDENT_CLAUSE:
         verb, suffix = handle_independent(verb, verb_negation, verb_pronoun)
         return {"root": verb, "suffix": suffix}
-    else:
+    else: # replace print() to log errors
         print("Neither Independent, Dependent Clause!")
-        return {"root": verb, "suffix": ""}
