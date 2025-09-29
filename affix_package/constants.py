@@ -9,8 +9,8 @@ class Consonants(tuple, Enum):
     DOUBLE_CONSONANT = ("ch", "sh", "zh")
 
 class Negation(str, Enum):
-    AFFIRMATIVE = True
-    NEGATIVE = False
+    AFFIRMATIVE = True # statement
+    NEGATIVE = False # statement
 
 class Pronoun(str, Enum):
     THIRD_SINGULAR_INANIMATE = "0s"

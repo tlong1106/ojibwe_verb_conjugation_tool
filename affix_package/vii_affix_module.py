@@ -175,6 +175,26 @@ VII_SUFFIX_MAP = {
                 Pronoun.THIRD_SINGULAR_INANIMATE_OBVIATE: "nig",
                 Pronoun.THIRD_PLURAL_INANIMATE_OBVIATE: "nig"
             }
+        },
+        Negation.NEGATIVE: {
+            VerbEndingVII.D: {
+                Pronoun.THIRD_SINGULAR_INANIMATE: "sinog",
+                Pronoun.THIRD_PLURAL_INANIMATE: "sinog",
+                Pronoun.THIRD_SINGULAR_INANIMATE_OBVIATE: "sininig",
+                Pronoun.THIRD_PLURAL_INANIMATE_OBVIATE: "sininig"
+            },
+            VerbEndingVII.N: {
+                Pronoun.THIRD_SINGULAR_INANIMATE: "zinog",
+                Pronoun.THIRD_PLURAL_INANIMATE: "zinog",
+                Pronoun.THIRD_SINGULAR_INANIMATE_OBVIATE: "zininig",
+                Pronoun.THIRD_PLURAL_INANIMATE_OBVIATE: "zininig"
+            },
+            VerbEndingVII.VOWEL: {
+                Pronoun.THIRD_SINGULAR_INANIMATE: "sinog",
+                Pronoun.THIRD_PLURAL_INANIMATE: "sinog",
+                Pronoun.THIRD_SINGULAR_INANIMATE_OBVIATE: "sininig",
+                Pronoun.THIRD_PLURAL_INANIMATE_OBVIATE: "sininig"
+            }
         }
     }
 }
@@ -231,6 +251,33 @@ class EndVowelDepAffirm(DependentAffirmativeRule):
     
     def apply(self, verb, pronoun):
         return verb, get_suffix(Clause.DEPENDENT_CLAUSE, Negation.AFFIRMATIVE, VerbEndingVII.VOWEL, pronoun)
+
+# - - -
+
+class DependentNegativeRule:
+    def matches(self) -> bool:
+        raise NotImplementedError
+    
+class EndDDepNeg(DependentNegativeRule):
+    def matches(self, verb, pronoun):
+        return verb.endswith(VerbEndingVII.D)
+    
+    def apply(self, verb, pronoun):
+        return remove_final_letter(verb), get_suffix(Clause.DEPENDENT_CLAUSE, Negation.NEGATIVE, VerbEndingVII.D, pronoun)
+
+class EndNDepNeg(DependentNegativeRule):
+    def matches(self, verb, pronoun):
+        return verb.endswith(VerbEndingVII.N)
+    
+    def apply(self, verb, pronoun):
+        return verb, get_suffix(Clause.DEPENDENT_CLAUSE, Negation.NEGATIVE, VerbEndingVII.N, pronoun)
+    
+class EndVowelDepNeg(DependentNegativeRule):
+    def matches(self, verb, pronoun):
+        return ends_with_vowel(verb)
+    
+    def apply(self, verb, pronoun):
+        return verb, get_suffix(Clause.DEPENDENT_CLAUSE, Negation.NEGATIVE, VerbEndingVII.VOWEL, pronoun)
 
 # - - -
 
@@ -301,6 +348,12 @@ DEPENDENT_AFFIRMATIVE_RULES = [
     EndVowelDepAffirm()
 ]
 
+DEPENDENT_NEGATIVE_RULES = [
+    EndDDepNeg(),
+    EndNDepNeg(),
+    EndVowelDepNeg()
+]
+
 INDEPENDENT_AFFIRMATIVE_RULES = [
     EndDorNIndAffirm(),
     EndVowelIndAffirm(),
@@ -319,11 +372,16 @@ def handle_dependent(verb: str, negation: bool, pronoun: str) -> tuple[str, str]
     if negation == Negation.AFFIRMATIVE:
         return handle_dependent_affirmative(verb, pronoun)
     else:
-        print("Negation not yet implemented for Dependent Clause")
-        return verb, ""
+        return handle_dependent_negative(verb, pronoun)
     
 def handle_dependent_affirmative(verb: str, pronoun: str) -> tuple[str, str]:
     for rule in DEPENDENT_AFFIRMATIVE_RULES:
+        if rule.matches(verb, pronoun):
+            return rule.apply(verb, pronoun)
+    return verb, ""
+
+def handle_dependent_negative(verb: str, pronoun: str) -> tuple[str, str]:
+    for rule in DEPENDENT_NEGATIVE_RULES:
         if rule.matches(verb, pronoun):
             return rule.apply(verb, pronoun)
     return verb, ""
