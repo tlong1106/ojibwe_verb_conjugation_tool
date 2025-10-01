@@ -13,10 +13,10 @@ class Negation(str, Enum):
     NEGATIVE = False # statement
 
 class Pronoun(str, Enum):
-    THIRD_SINGULAR_INANIMATE = "0s"
-    THIRD_PLURAL_INANIMATE = "0p"
-    THIRD_SINGULAR_INANIMATE_OBVIATE = "0's"
-    THIRD_PLURAL_INANIMATE_OBVIATE = "0'p"
+    THIRD_SINGULAR_INANIMATE = "Third Person Singular Inanimate"
+    THIRD_PLURAL_INANIMATE = "Third Person Plural Inanimate"
+    THIRD_SINGULAR_INANIMATE_OBVIATE = "Third Person Singular Inanimate Obviate"
+    THIRD_PLURAL_INANIMATE_OBVIATE = "Third Person Plural Inanimate Obviate"
 
 class Vowels(tuple, Enum):
     VOWEL = ("aa", "ii", "oo", "e", "a", "i", "o", "o")
