@@ -14,6 +14,6 @@ class ConjugationInput:
     verb_negation: bool
     
     # Optional when creating an instance. If not passed, will default automatically.
-    verb_clause: str = None
+    verb_clause: str = None # <--- change to 'order'?
     verb_pronoun: str = None
-    verb_suffix: str = None
+    verb_tense: str = None

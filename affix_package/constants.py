@@ -18,6 +18,13 @@ class Pronoun(str, Enum):
     THIRD_SINGULAR_INANIMATE_OBVIATE = "Third Person Singular Inanimate Obviate"
     THIRD_PLURAL_INANIMATE_OBVIATE = "Third Person Plural Inanimate Obviate"
 
+class Tense(str, Enum):
+    CONDITIONAL = "Conditional"
+    FUTURE_DEFINITIVE = "Future Definitive"
+    FUTURE_DESIDERATIVE = "Future Desiderative"
+    PAST = "Past"
+    PRESENT = "Present"
+
 class Vowels(tuple, Enum):
     VOWEL = ("aa", "ii", "oo", "e", "a", "i", "o", "o")
     LONG_VOWEL = ("aa", "e", "ii", "oo")
