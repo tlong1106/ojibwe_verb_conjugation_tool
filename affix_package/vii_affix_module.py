@@ -229,7 +229,10 @@ class DummyNDepAffirm(DependentAffirmativeRule):
         return verb in DUMMY_N
     
     def apply(self, verb, pronoun):
-        return remove_final_letter(verb), get_suffix(Clause.DEPENDENT_CLAUSE, Negation.AFFIRMATIVE, VerbEndingVII.D_N, pronoun, key = VerbEndingVII.N)
+        if pronoun in (Pronoun.THIRD_SINGULAR_INANIMATE_OBVIATE, Pronoun.THIRD_PLURAL_INANIMATE_OBVIATE):
+            return remove_final_letter(verb), get_suffix(Clause.DEPENDENT_CLAUSE, Negation.AFFIRMATIVE, VerbEndingVII.VOWEL, pronoun)
+        else:
+            return remove_final_letter(verb), get_suffix(Clause.DEPENDENT_CLAUSE, Negation.AFFIRMATIVE, VerbEndingVII.D_N, pronoun, key = VerbEndingVII.N)
     
 class EndDDepAffirm1(DependentAffirmativeRule):
     def matches(self, verb, pronoun):
