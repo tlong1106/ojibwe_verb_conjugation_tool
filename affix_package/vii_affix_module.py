@@ -308,6 +308,15 @@ class IndependentAffirmativeRule:
     def apply(self) -> tuple[str, str]:
         raise NotImplementedError
     
+class DummyNIndAffirm(IndependentAffirmativeRule):
+    def matches(self, verb, pronoun):
+        return verb in DUMMY_N
+
+    def apply(self, verb, pronoun):
+        if pronoun == Pronoun.THIRD_SINGULAR_INANIMATE:
+            return verb, get_suffix(Clause.INDEPENDENT_CLAUSE, Negation.AFFIRMATIVE, VerbEndingVII.VOWEL, pronoun)
+        return remove_final_letter(verb), get_suffix(Clause.INDEPENDENT_CLAUSE, Negation.AFFIRMATIVE, VerbEndingVII.VOWEL, pronoun)
+    
 class EndDorNIndAffirm(IndependentAffirmativeRule):
     def matches(self, verb, pronoun):
         return ends_with_d_or_n(verb)
@@ -377,6 +386,7 @@ DEPENDENT_NEGATIVE_RULES = [
 ]
 
 INDEPENDENT_AFFIRMATIVE_RULES = [
+    DummyNIndAffirm(),
     EndDorNIndAffirm(),
     EndVowelIndAffirm()
 ]
@@ -430,9 +440,9 @@ def handle_independent_negative(verb: str, pronoun: str) -> tuple[str, str]:
 
 def get_vii_suffix(input_data: ConjugationInput) -> dict:
     """
-    Pure function that returns Verb Inanimate Intransitive (VII) conjugation:
-      Clause: Independent
-      Negation: Affirmative
+    Accepts verb with 'clause', 'negation' and 'pronoun' variables
+    Modifies the verb (if necessary) to create a 'root' and determines 'suffix'
+    Returns a dictionary that contains 'root' and 'suffix'
     """
 
     verb_type = "vii"
@@ -442,13 +452,16 @@ def get_vii_suffix(input_data: ConjugationInput) -> dict:
     verb_pronoun = input_data.verb_pronoun
 
     if verb_type != "vii":
-        return {"root": verb, "suffix": ""}
+        verb_data = {"root": verb, "suffix": ""}
+        return verb_data
     
     if verb_clause == Clause.DEPENDENT_CLAUSE:
         verb, suffix = handle_dependent(verb, verb_negation, verb_pronoun)
-        return {"root": verb, "suffix": suffix}
+        verb_data = {"root": verb, "suffix": suffix}
+        return verb_data
     elif verb_clause == Clause.INDEPENDENT_CLAUSE:
         verb, suffix = handle_independent(verb, verb_negation, verb_pronoun)
-        return {"root": verb, "suffix": suffix}
+        verb_data = {"root": verb, "suffix": suffix}
+        return verb_data
     else: # replace print() to log errors
         print("Neither Independent, Dependent Clause!")

@@ -24,26 +24,11 @@ def consonant_shift(verb: str, tense: str) -> str:
                 return replacement + verb[len(tense_prefix):]
     return verb
 
-# def handle_conditional(verb: str, pronoun: str, tense: str) -> str:
-#     return styled_text(TENSE_PREFIX_MAP[Tense.CONDITIONAL], "gray_normal") + consonant_shift(verb, tense)
-
-# def handle_future_definitive(verb: str, pronoun: str, tense: str) -> str:
-#     if pronoun in (Pronoun.THIRD_SINGULAR_ANIMATE, Pronoun.THIRD_PLURAL_ANIMATE):
-#         return styled_text(TENSE_PREFIX_MAP[Tense.FUTURE_DEFINITIVE][0], "gray_normal") + consonant_shift(verb, tense)
-#     else:
-#         return styled_text(TENSE_PREFIX_MAP[Tense.FUTURE_DEFINITIVE][1], "gray_normal") + consonant_shift(verb, tense)
-
-# def handle_future_desiderative(verb: str, pronoun: str, tense: str) -> str:
-#     return styled_text(TENSE_PREFIX_MAP[Tense.FUTURE_DESIDERATIVE], "gray_normal") + consonant_shift(verb, tense)
-
-# def handle_past(verb: str, pronoun: str, tense: str) -> str:
-#     return styled_text(TENSE_PREFIX_MAP[Tense.PAST], "gray_normal") + consonant_shift(verb, tense)
-
 def get_tense_prefix(verb_data: dict, pronoun: str, tense: str) -> str:
     """
     Accepts a dictionary containing 'root' and 'suffix'
     Applies consonant shifts (if applicable) to modify 'root'
-    Adds 'tense' prefix to dictionary
+    Adds 'tense' prefix and returns an updated dictionary
     """
 
     root = verb_data["root"]
