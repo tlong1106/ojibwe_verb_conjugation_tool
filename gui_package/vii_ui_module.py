@@ -8,7 +8,6 @@ from affix_package.constants import Clause, Negation, Pronoun, Tense
 from affix_package.vii_affix_module import get_vii_suffix
 from affix_package.tense_prefix_module import get_tense_prefix
 
-
 # --- 1. Helpers ---
 
 def show_colored_verb():
@@ -34,7 +33,7 @@ def show_colored_verb():
         print(f"user-selected pronoun: {pronoun_enum}")
         tense_enum = next(t for t in Tense if t.value == tense)
 
-        input_data = ConjugationInput(verb_type, verb, negation_enum, clause_enum, pronoun_enum)
+        input_data = ConjugationInput(verb_type, verb, negation_enum, clause_enum, pronoun_enum, tense_enum)
         print(f"input_data: {input_data}")
         result = get_vii_suffix(input_data)
         print(f"get_vii_suffix() output: {result}")
@@ -50,7 +49,7 @@ def show_colored_verb():
 
         # Dynamic color configuration
         suffix_font = "normal" if clause_enum == Clause.INDEPENDENT_CLAUSE else "italic"
-        suffix_color = "green" if negation_enum == Negation.AFFIRMATIVE else "red"
+        suffix_color = "red" if negation_enum == Negation.NEGATIVE else "black"
         text_widget.tag_configure("suffix_tag", foreground=suffix_color, font=("Helvetica", 32, f"{suffix_font}"))
         
 
@@ -68,38 +67,42 @@ def show_colored_verb():
 root = tk.Tk()
 root.title("Southwestern Ojibwe Verb Conjugation App")
 
+# Frame for input fields
+input_frame = ttk.Frame(root)
+input_frame.pack(padx=10, pady=10)
+
 # User input for verb
-ttk.Label(root, text="Verb:").pack()
-verb_entry = ttk.Entry(root, width=40, justify="center")
-verb_entry.pack()
+ttk.Label(input_frame, text="Verb:").grid(row=0, column=0, sticky="w", padx=5, pady=2)
+verb_entry = ttk.Entry(input_frame, width=40, justify="center")
+verb_entry.grid(row=0, column=1, padx=5, pady=2)
 
 # User input for clause
 clause_var = tk.StringVar(value="Independent")
-ttk.Label(root, text="Clause:").pack()
-clause_menu = ttk.OptionMenu(root, clause_var, "Independent", "Independent", "Dependent")
-clause_menu.pack()
+ttk.Label(input_frame, text="Clause:").grid(row=1, column=0, sticky="w", padx=5, pady=2)
+clause_menu = ttk.OptionMenu(input_frame, clause_var, "Independent", "Independent", "Dependent")
+clause_menu.grid(row=1, column=1, sticky="w", padx=5, pady=2)
 
 # User input for negation
 negation_var = tk.StringVar(value="Affirmative")
-ttk.Label(root, text="Negation:").pack()
-negation_menu = ttk.OptionMenu(root, negation_var, "Affirmative", "Affirmative", "Negative")
-negation_menu.pack()
+ttk.Label(input_frame, text="Negation:").grid(row=2, column=0, sticky="w", padx=5, pady=2)
+negation_menu = ttk.OptionMenu(input_frame, negation_var, "Affirmative", "Affirmative", "Negative")
+negation_menu.grid(row=2, column=1, sticky="w", padx=5, pady=2)
 
 # User input for pronoun
 pronoun_var = tk.StringVar(value="Third Person Singular Inanimate")
-ttk.Label(root, text="Pronoun:").pack()
+ttk.Label(input_frame, text="Pronoun:").grid(row=3, column=0, sticky="w", padx=5, pady=2)
 pronoun_options = [
     "Third Person Singular Inanimate",
     "Third Person Singular Inanimate Obviate",
     "Third Person Plural Inanimate",
     "Third Person Plural Inanimate Obviate"
 ]
-pronoun_menu = ttk.OptionMenu(root, pronoun_var, pronoun_var.get(), *pronoun_options)
-pronoun_menu.pack()
+pronoun_menu = ttk.OptionMenu(input_frame, pronoun_var, pronoun_var.get(), *pronoun_options)
+pronoun_menu.grid(row=3, column=1, sticky="w", padx=5, pady=2)
 
 # User input for tense
 tense_var = tk.StringVar(value="Present")
-ttk.Label(root, text="Tense:").pack()
+ttk.Label(input_frame, text="Tense:").grid(row=4, column=0, sticky="w", padx=5, pady=2)
 tense_options = [
     "Conditional",
     "Future Definitive",
@@ -107,8 +110,8 @@ tense_options = [
     "Past",
     "Present"
 ]
-pronoun_menu = ttk.OptionMenu(root, tense_var, tense_var.get(), *tense_options)
-pronoun_menu.pack()
+tense_menu = ttk.OptionMenu(input_frame, tense_var, tense_var.get(), *tense_options)
+tense_menu.grid(row=4, column=1, sticky="w", padx=5, pady=2)
 
 # Text widget output
 text_widget = tk.Text(root, height=2, width=40, font=("Helvetica", 32))
